@@ -31,14 +31,18 @@ int main(int argc, char* argv[]) {
                         	}
 
 				dir = opendir(path);
-
+				if (!dir) {
+                        		perror("no such directory");
+                		}
+				int blocks;
+							
 				while((dirent = readdir(dir)) != NULL) {
                 			sprintf(buf, "%s/%s", path, dirent->d_name);
                 			stat(buf, &st);
-
-                			printf("%s\n", dirent->d_name);
-
-                			printf((st.st_mode & S_IRUSR) ? "r" : "-");
+					blocks+=st.st_blocks;
+					printf("%-10s", dirent->d_name);
+					
+                			printf((st.st_mode & S_IRUSR) ? " r" : " -");
                 			printf((st.st_mode & S_IWUSR) ? "w" : "-");
                 			printf((st.st_mode & S_IXUSR) ? "x" : "-");
                 			printf((st.st_mode & S_IRGRP) ? "r" : "-");
@@ -47,8 +51,8 @@ int main(int argc, char* argv[]) {
                 			printf((st.st_mode & S_IROTH) ? "r" : "-");
                 			printf((st.st_mode & S_IWOTH) ? "w" : "-");
                 			printf((st.st_mode & S_IXOTH) ? "x" : "-");
-
-                			printf(" %d", st.st_nlink);
+					
+                			printf(" %-7d", st.st_nlink);
 
                 			pwd = getpwuid(st.st_uid);
                 			printf(" %s", pwd->pw_name);
@@ -56,26 +60,30 @@ int main(int argc, char* argv[]) {
                 			grp = getgrgid(st.st_gid);
                 			printf(" %s", grp->gr_name);
 
-                			printf(" %lld", st.st_size);
+                			printf(" %-10lld", st.st_size);
                 			printf(" %s", ctime(&st.st_mtime));
-        			
+        						
 				}
+				printf("total %d \n", blocks);
 				closedir(dir);
 			break;
 		}
 	}
 	else {
-                if (argc < 2) {
+		if (argc < 2) {
                 	strcpy(path, ".");
                 }
                 else {
                 	strcpy(path, argv[1]);
                 }
-
-                        dir = opendir(path);
-
-                        while((dirent = readdir(dir)) != NULL) {
-        	                printf("%s\n", dirent->d_name);
-                        }
+	
+                dir = opendir(path);
+		if (!dir) {
+			perror("no such directory");
+		}
+                while((dirent = readdir(dir)) != NULL) {
+        		printf("%s\n", dirent->d_name);
+                }
+		closedir(dir);	
 	}
 }
