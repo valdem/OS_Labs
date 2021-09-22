@@ -33,7 +33,8 @@ int main(int argc, char* argv[]) {
 				dir = opendir(path);
 				if (!dir) {
                         		perror("no such directory");
-                		}
+                			return -1;
+				}
 				int blocks;
 							
 				while((dirent = readdir(dir)) != NULL) {
@@ -54,8 +55,12 @@ int main(int argc, char* argv[]) {
 					
                 			printf(" %-7d", st.st_nlink);
 
-                			pwd = getpwuid(st.st_uid);
-                			printf(" %s", pwd->pw_name);
+                			if ((pwd = getpwuid(st.st_uid)) == 0) {
+						printf("  ");
+					}
+					else {
+						printf(" %s", pwd->pw_name);
+					}
 
                 			grp = getgrgid(st.st_gid);
                 			printf(" %s", grp->gr_name);
@@ -80,10 +85,12 @@ int main(int argc, char* argv[]) {
                 dir = opendir(path);
 		if (!dir) {
 			perror("no such directory");
+			return -1;
 		}
                 while((dirent = readdir(dir)) != NULL) {
         		printf("%s\n", dirent->d_name);
                 }
 		closedir(dir);	
 	}
+	return 0;
 }
