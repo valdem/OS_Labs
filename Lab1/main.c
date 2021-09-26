@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 void handle_exit() {
     printf("Finished %d\n", getpid());
@@ -9,7 +11,7 @@ void handle_exit() {
 int main(int argc, char** argv) {
     pid_t pid = fork();
     atexit(handle_exit);
-    
+
     switch (pid) {
         case -1:
             perror("no pid");
@@ -24,6 +26,6 @@ int main(int argc, char** argv) {
             printf("Parent ppid = %d\n", getppid());
             break;
     }
-    
+
     return 0;
 }
