@@ -22,6 +22,7 @@ int main(int argc, char** argv) {
             break;
         default:
             wait(NULL);
+            printf("Parent child_pid = %d\n", pid);
             printf("Parent pid = %d\n", getpid());
             printf("Parent ppid = %d\n", getppid());
             break;
