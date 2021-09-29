@@ -9,6 +9,7 @@ void handle_exit() {
 }
 
 int main(int argc, char** argv) {
+    int status;
     pid_t pid = fork();
     atexit(handle_exit);
 
@@ -24,7 +25,8 @@ int main(int argc, char** argv) {
             printf("Parent child_pid = %d\n", pid);
             printf("Parent pid = %d\n", getpid());
             printf("Parent ppid = %d\n", getppid());
-            wait(NULL);
+            wait(&status);
+            printf("Exit status: %d\n", WEXITSTATUS(status));
             break;
     }
 
