@@ -198,7 +198,7 @@ int main(int argc, char** argv) {
             case 'h':
                 printf("Print ./archiver archive_name -i file_name to input file to archive\n");
                 printf("Print ./archiver archive_name -e file_name to extract file from archive\n");
-                printf("Print ./archiver archive_name -s file_name to get info about archive\n");
+                printf("Print ./archiver -s archive_name to get info about archive\n");
                 break;
             case '?':
                 perror("Incorrect flag. Print -h to info.\n");
