@@ -97,7 +97,76 @@ void input(char *arch_name, char *file_name) {
 }
 
 void extract(char *arch_name, char *file_name) {
+    FILE *archive;
     
+    int count = 0;
+    
+    if ((archive = fopen(arch_name,"r")) != NULL) {
+            fscanf(archive, "%d", &count);
+            fgetc(archive);
+    }
+    
+    int size_name[count];
+    int size_content[count];
+    char* file_names[count];
+    char* file_content[count];
+    
+    if (count != 0) {
+        for (int i = 0; i < count; i++){
+            fscanf(archive, "%d", &size_name[i]);
+            fgetc(archive);
+            fscanf(archive, "%d", &size_content[i]);
+            fgetc(archive);
+            file_names[i] = malloc(size_name[i]);
+            fread(file_names[i], 1, size_name[i], archive);
+            fgetc(archive);
+            file_content[i] = malloc(size_content[i]);
+            fread(file_content[i], 1, size_content[i], archive);
+            fgetc(archive);
+        }
+    }
+    fclose(archive);
+    
+    int file_count = -1;
+    for (int i = 0; i < count; i++) {
+        if (strcmp(file_names[i], file_name) == 0) {
+            file_count = i;
+        }
+    }
+    
+    if (file_count == -1) {
+        perror("No such file");
+        exit(1);
+    }
+    
+    if ((archive = fopen(arch_name, "w")) != NULL) {
+        count--;
+        fprintf(archive, "%d\n", count);
+        
+        for (int i = 0; i < count+1; i++){
+            if (i != file_count) {
+                fprintf(archive, "%d\n", size_name[i]);
+                fprintf(archive, "%d\n", size_content[i]);
+                fwrite(file_names[i], 1, size_name[i], archive);
+                fputc('\n', archive);
+                fwrite(file_content[i], 1, size_content[i], archive);
+                fputc('\n', archive);
+            }
+        }
+        
+        
+        fclose(archive);
+        
+        for (int i = 0; i < count-1; i++) {
+                free(file_content[i]);
+                free(file_names[i]);
+        }
+        
+    }
+    else {
+        perror("No such archive");
+        exit(1);
+    }
 }
 
 void stat(char *arch_name) {
