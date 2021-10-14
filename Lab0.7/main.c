@@ -44,8 +44,15 @@ void input(char *arch_name, char *file_name) {
             fread(file_content[i], 1, size_content[i], archive);
             fgetc(archive);
         }
+        fclose(archive);
     }
-    fclose(archive);
+    
+    for (int i = 0; i < count; i++) {
+        if (strcmp(file_names[i], file_name) == 0) {
+            perror("This filename already exists");;
+            exit(1);
+        }
+    }
     
     if ((in = fopen(file_name, "r")) != NULL) {
         fseek (in, 0, SEEK_END);
@@ -124,8 +131,8 @@ void extract(char *arch_name, char *file_name) {
             fread(file_content[i], 1, size_content[i], archive);
             fgetc(archive);
         }
+        fclose(archive);
     }
-    fclose(archive);
     
     int file_count = -1;
     for (int i = 0; i < count; i++) {
