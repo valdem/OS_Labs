@@ -4,12 +4,14 @@
 #include <getopt.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/stat.h>
 
 struct file {
     char* name;
     int size_name;
     char* content;
     int size_content;
+    mode_t mode;
 };
 
 void input(char *arch_name, char *file_name) {
@@ -28,6 +30,7 @@ void input(char *arch_name, char *file_name) {
     
     int size_name[count];
     int size_content[count];
+    mode_t file_modes[count];
     char* file_names[count];
     char* file_content[count];
     
@@ -36,6 +39,8 @@ void input(char *arch_name, char *file_name) {
             fscanf(archive, "%d", &size_name[i]);
             fgetc(archive);
             fscanf(archive, "%d", &size_content[i]);
+            fgetc(archive);
+            fscanf(archive, "%hd", &file_modes[i]);
             fgetc(archive);
             file_names[i] = malloc(size_name[i]);
             fread(file_names[i], 1, size_name[i], archive);
@@ -54,6 +59,7 @@ void input(char *arch_name, char *file_name) {
         }
     }
     
+    struct stat buff;
     if ((in = fopen(file_name, "r")) != NULL) {
         fseek (in, 0, SEEK_END);
         infile.size_content = ftell(in);
@@ -61,6 +67,9 @@ void input(char *arch_name, char *file_name) {
         infile.content = malloc(infile.size_content);
         fread(infile.content, 1, infile.size_content, in);
         fclose(in);
+        
+        stat(file_name, &buff);
+        infile.mode = buff.st_mode;
     }
     else {
         perror("No such file");
@@ -75,6 +84,7 @@ void input(char *arch_name, char *file_name) {
             for (int i = 0; i < count-1; i++){
                 fprintf(archive, "%d\n", size_name[i]);
                 fprintf(archive, "%d\n", size_content[i]);
+                fprintf(archive, "%d\n", file_modes[i]);
                 fwrite(file_names[i], 1, size_name[i], archive);
                 fputc('\n', archive);
                 fwrite(file_content[i], 1, size_content[i], archive);
@@ -84,6 +94,7 @@ void input(char *arch_name, char *file_name) {
         
         fprintf(archive, "%d\n", infile.size_name);
         fprintf(archive, "%d\n", infile.size_content);
+        fprintf(archive, "%d\n", infile.mode);
         fprintf(archive, "%s\n", infile.name);
         fwrite(infile.content, 1, infile.size_content, archive);
         fputc('\n', archive);
@@ -115,6 +126,7 @@ void extract(char *arch_name, char *file_name) {
     
     int size_name[count];
     int size_content[count];
+    mode_t file_modes[count];
     char* file_names[count];
     char* file_content[count];
     
@@ -123,6 +135,8 @@ void extract(char *arch_name, char *file_name) {
             fscanf(archive, "%d", &size_name[i]);
             fgetc(archive);
             fscanf(archive, "%d", &size_content[i]);
+            fgetc(archive);
+            fscanf(archive, "%hd", &file_modes[i]);
             fgetc(archive);
             file_names[i] = malloc(size_name[i]);
             fread(file_names[i], 1, size_name[i], archive);
@@ -138,6 +152,7 @@ void extract(char *arch_name, char *file_name) {
     for (int i = 0; i < count; i++) {
         if (strcmp(file_names[i], file_name) == 0) {
             file_count = i;
+            chmod(file_name, file_modes[i]);
         }
     }
     
@@ -154,6 +169,7 @@ void extract(char *arch_name, char *file_name) {
             if (i != file_count) {
                 fprintf(archive, "%d\n", size_name[i]);
                 fprintf(archive, "%d\n", size_content[i]);
+                fprintf(archive, "%d\n", file_modes[i]);
                 fwrite(file_names[i], 1, size_name[i], archive);
                 fputc('\n', archive);
                 fwrite(file_content[i], 1, size_content[i], archive);
@@ -176,7 +192,7 @@ void extract(char *arch_name, char *file_name) {
     }
 }
 
-void stat(char *arch_name) {
+void stats(char *arch_name) {
     FILE *archive;
     
     int count = 0;
@@ -192,6 +208,7 @@ void stat(char *arch_name) {
     
     int size_name[count];
     int size_content[count];
+    mode_t file_modes[count];
     char* file_names[count];
     char* file_content[count];
     
@@ -199,6 +216,8 @@ void stat(char *arch_name) {
         fscanf(archive, "%d", &size_name[i]);
         fgetc(archive);
         fscanf(archive, "%d", &size_content[i]);
+        fgetc(archive);
+        fscanf(archive, "%hd", &file_modes[i]);
         fgetc(archive);
         file_names[i] = malloc(size_name[i]);
         fread(file_names[i], 1, size_name[i], archive);
@@ -269,7 +288,7 @@ int main(int argc, char** argv) {
                     break;
                 }
                 arch_name = argv[2];
-                stat(arch_name);
+                stats(arch_name);
                 break;
             case 'h':
                 printf("Print ./archiver archive_name -i file_name to input file to archive\n");
