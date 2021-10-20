@@ -18,8 +18,8 @@ void mychmod(int who, int operation, int r, int w, int x, char* file_name) {
                     past_mode = past_mode | S_IRUSR;
                 }
                 else if (operation == 2) {
-                    chmod(file_name, past_mode ^ S_IRUSR);
-                    past_mode = past_mode ^ S_IRUSR;
+                    chmod(file_name, past_mode & (~S_IRUSR));
+                    past_mode = past_mode & (~S_IRUSR);
                 }
                 break;
             case 2:
@@ -28,8 +28,8 @@ void mychmod(int who, int operation, int r, int w, int x, char* file_name) {
                     past_mode = past_mode | S_IRGRP;
                 }
                 else if (operation == 2) {
-                    chmod(file_name, past_mode ^ S_IRGRP);
-                    past_mode = past_mode ^ S_IRGRP;
+                    chmod(file_name, past_mode & (~S_IRGRP));
+                    past_mode = past_mode & (~S_IRGRP);
                 }
                 break;
             case 3:
@@ -38,8 +38,8 @@ void mychmod(int who, int operation, int r, int w, int x, char* file_name) {
                     past_mode = past_mode | S_IROTH;
                 }
                 else if (operation == 2) {
-                    chmod(file_name, past_mode ^ S_IROTH);
-                    past_mode = past_mode ^ S_IROTH;
+                    chmod(file_name, past_mode & (~S_IROTH));
+                    past_mode = past_mode & (~S_IROTH);
                 }
                 break;
         }
@@ -53,8 +53,8 @@ void mychmod(int who, int operation, int r, int w, int x, char* file_name) {
                     past_mode = past_mode | S_IWUSR;
                 }
                 else if (operation == 2) {
-                    chmod(file_name, past_mode ^ S_IWUSR);
-                    past_mode = past_mode ^ S_IWUSR;
+                    chmod(file_name, past_mode & (~S_IWUSR));
+                    past_mode = past_mode & (~S_IWUSR);
                 }
                 break;
             case 2:
@@ -63,8 +63,8 @@ void mychmod(int who, int operation, int r, int w, int x, char* file_name) {
                     past_mode = past_mode | S_IWGRP;
                 }
                 else if (operation == 2) {
-                    chmod(file_name, past_mode ^ S_IWGRP);
-                    past_mode = past_mode ^ S_IWGRP;
+                    chmod(file_name, past_mode & (~S_IWGRP));
+                    past_mode = past_mode & (~S_IWGRP);
                 }
                 break;
             case 3:
@@ -73,8 +73,8 @@ void mychmod(int who, int operation, int r, int w, int x, char* file_name) {
                     past_mode = past_mode | S_IWOTH;
                 }
                 else if (operation == 2) {
-                    chmod(file_name, past_mode ^ S_IWOTH);
-                    past_mode = past_mode ^ S_IWOTH;
+                    chmod(file_name, past_mode & (~S_IWOTH));
+                    past_mode = past_mode & (~S_IWOTH);
                 }
                 break;
         }
@@ -88,8 +88,8 @@ void mychmod(int who, int operation, int r, int w, int x, char* file_name) {
                     past_mode = past_mode | S_IXUSR;
                 }
                 else if (operation == 2) {
-                    chmod(file_name, past_mode ^ S_IXUSR);
-                    past_mode = past_mode ^ S_IXUSR;
+                    chmod(file_name, past_mode & (~S_IXUSR));
+                    past_mode = past_mode & (~S_IXUSR);
                 }
                 break;
             case 2:
@@ -98,8 +98,8 @@ void mychmod(int who, int operation, int r, int w, int x, char* file_name) {
                     past_mode = past_mode | S_IXGRP;
                 }
                 else if (operation == 2) {
-                    chmod(file_name, past_mode ^ S_IXGRP);
-                    past_mode = past_mode ^ S_IXGRP;
+                    chmod(file_name, past_mode & (~S_IXGRP));
+                    past_mode = past_mode & (~S_IXGRP);
                 }
                 break;
             case 3:
@@ -108,8 +108,8 @@ void mychmod(int who, int operation, int r, int w, int x, char* file_name) {
                     past_mode = past_mode | S_IXOTH;
                 }
                 else if (operation == 2) {
-                    chmod(file_name, past_mode ^ S_IXOTH);
-                    past_mode = past_mode ^ S_IXOTH;
+                    chmod(file_name, past_mode & (~S_IXOTH));
+                    past_mode = past_mode & (~S_IXOTH);
                 }
                 break;
         }
