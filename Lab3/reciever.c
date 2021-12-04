@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     int id;
     char* at;
     
-    if ((id = shmget(key, sizeof(data), IPC_CREAT | 0666)) < 0) {
+    if ((id = shmget(key, sizeof(data), 0666)) < 0) {
         printf("Shmget error: %s\n", strerror(errno));
         exit(0);
     }
