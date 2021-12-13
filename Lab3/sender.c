@@ -23,13 +23,16 @@ int main(int argc, char** argv) {
         exit(0);
     }
     
-    if ((at = shmat(id, NULL, 0)) < 0) {
-        printf("Shmat error: %s\n", strerror(errno));
+    struct shmid_ds buf;
+    shmctl(id, IPC_STAT, &buf);
+    
+    if (buf.shm_nattch > 0) {
+        printf("Sender already exists\n");
         exit(0);
     }
     
-    if (strlen(at) != 0) {
-        printf("Sender already exists\n");
+    if ((at = shmat(id, NULL, 0)) < 0) {
+        printf("Shmat error: %s\n", strerror(errno));
         exit(0);
     }
     

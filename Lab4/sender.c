@@ -26,6 +26,14 @@ int main(int argc, char** argv) {
         exit(0);
     }
     
+    struct shmid_ds buf;
+    shmctl(shmid, IPC_STAT, &buf);
+    
+    if (buf.shm_nattch > 0) {
+        printf("Sender already exists\n");
+        exit(0);
+    }
+    
     if ((semid = semget(key, sizeof(data), IPC_CREAT | 0666)) < 0) {
         printf("Semget error: %s\n", strerror(errno));
         exit(0);
@@ -33,11 +41,6 @@ int main(int argc, char** argv) {
     
     if ((at = shmat(shmid, NULL, 0)) < 0) {
         printf("Shmat error: %s\n", strerror(errno));
-        exit(0);
-    }
-    
-    if (strlen(at) != 0) {
-        printf("Sender already exists\n");
         exit(0);
     }
     
