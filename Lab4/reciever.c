@@ -8,6 +8,8 @@
 #include <errno.h>
 #include <sys/sem.h>
 
+int shmid;
+
 typedef struct data {
     time_t time;
     pid_t pid;
@@ -15,11 +17,17 @@ typedef struct data {
 
 struct sembuf sem_lock = {0, -1, 0}, sem_open = {0, 1, 0};
 
+void myexit() {
+    printf("Reciever done\n");
+    struct shmid_ds buf;
+    shmctl(shmid, IPC_RMID, &buf);
+}
+
 int main(int argc, char** argv) {
+    signal(SIGINT, myexit);
     key_t key = ftok("file", 5);
     
-    int shmid, semid;
-    char* at;
+    int semid;
     
     if ((shmid = shmget(key, sizeof(data), 0666)) < 0) {
         printf("Shmget error: %s\n", strerror(errno));
@@ -31,7 +39,8 @@ int main(int argc, char** argv) {
         exit(0);
     }
     
-    if ((at = shmat(shmid, NULL, 0)) < 0) {
+    char* at = shmat(shmid, NULL, 0);
+    if (at < 0) {
         printf("Shmat error: %s\n", strerror(errno));
         exit(0);
     }
@@ -43,5 +52,6 @@ int main(int argc, char** argv) {
     printf("%s", at);
     semop(semid, &sem_lock, 1);
     
+    shmdt(at);
     return 0;
 }

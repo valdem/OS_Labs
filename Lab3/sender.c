@@ -7,16 +7,22 @@
 #include <string.h>
 #include <errno.h>
 
+int id;
+
 typedef struct data {
     time_t time;
     pid_t pid;
 } data;
 
+void myexit() {
+    printf("Sender done\n");
+    struct shmid_ds buf;
+    shmctl(id, IPC_RMID, &buf);
+}
+
 int main(int argc, char** argv) {
+    signal(SIGINT, myexit);
     key_t key = ftok("file", 5);
-    
-    int id;
-    char* at;
     
     if ((id = shmget(key, sizeof(data), IPC_CREAT | 0666)) < 0) {
         printf("Shmget error: %s\n", strerror(errno));
@@ -31,7 +37,8 @@ int main(int argc, char** argv) {
         exit(0);
     }
     
-    if ((at = shmat(id, NULL, 0)) < 0) {
+    char* at = shmat(id, NULL, 0);
+    if (at < 0) {
         printf("Shmat error: %s\n", strerror(errno));
         exit(0);
     }
@@ -46,6 +53,9 @@ int main(int argc, char** argv) {
             sleep(3);
             sprintf(at, "Sender time = %sSender pid = %d\n", ctime(&cur_time), getpid());
         }
+        
     }
+    
+    shmdt(at);
     return 0;
 }
