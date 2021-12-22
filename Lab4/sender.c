@@ -46,16 +46,16 @@ int main(int argc, char** argv) {
         exit(0);
     }
     
-    char* at = shmat(shmid, NULL, 0);
-    if (at < 0) {
-        printf("Shmat error: %s\n", strerror(errno));
-        exit(0);
-    }
-    
     time_t cur_time = time(0);
     time_t buf_time = cur_time;
     
     while (1) {
+        char* at = shmat(shmid, NULL, 0);
+        if (at < 0) {
+            printf("Shmat error: %s\n", strerror(errno));
+            exit(0);
+        }
+        
         cur_time = time(0);
         if (cur_time != buf_time) {
             semop(semid, &sem_open, 1);
@@ -64,8 +64,10 @@ int main(int argc, char** argv) {
             sprintf(at, "Sender time = %sSender pid = %d\n", ctime(&cur_time), getpid());
             semop(semid, &sem_lock, 1);
         }
+        
+        shmdt(at);
     }
     
-    shmdt(at);
+    
     return 0;
 }
